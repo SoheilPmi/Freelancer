@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>سامانه تولید فرم کمیسیون خاص | نمونه برگ شماره ۴</title>
+  <style>
+    /* ========== Base layout (English comments; Persian UI) ========== */
+    :root{
+      --bg:#f7f7fb;
+      --card:#ffffff;
+      --ink:#1f2937;
+      --muted:#6b7280;
+      --accent:#0ea5e9;
+      --danger:#dc2626;
+      --border:#e5e7eb;
+      --ok:#16a34a;
+      --warning:#d97706;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --radius:12px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: Vazirmatn, IRANSans, "Segoe UI", Tahoma, Arial, sans-serif;
+      background:var(--bg);
+      color:var(--ink);
+      line-height:1.6;
+    }
+    .container{
+      display:grid;
+      grid-template-columns: 1fr 1.1fr;
+      gap:16px;
+      padding:16px;
+    }
+    @media (max-width:1200px){
+      .container{grid-template-columns: 1fr}
+    }
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.04);
+      overflow:hidden;
+    }
+    .card header{
+      padding:14px 16px;
+      border-bottom:1px solid var(--border);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+      background:#fcfdff;
+    }
+    .card header h2{
+      margin:0;
+      font-size:16px;
+      font-weight:700;
+    }
+    .card .body{padding:16px}
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap:12px;
+    }
+    .col-12{grid-column: span 12}
+    .col-6{grid-column: span 6}
+    .col-4{grid-column: span 4}
+    .col-3{grid-column: span 3}
+    .col-8{grid-column: span 8}
+    .col-2{grid-column: span 2}
+    .row{margin-bottom:8px}
+
+    label{
+      display:block;
+      font-size:12px;
+      color:var(--muted);
+      margin-bottom:6px;
+    }
+    input[type="text"],
+    input[type="date"],
+    input[type="number"],
+    textarea,
+    select{
+      width:100%;
+      padding:10px 12px;
+      border:1px solid var(--border);
+      border-radius:10px;
+      background:#fff;
+      color:var(--ink);
+      font-size:14px;
+      outline:none;
+      transition:border-color .2s, box-shadow .2s;
+    }
+    textarea{min-height:84px; resize:vertical}
+    input:focus, textarea:focus, select:focus{
+      border-color:var(--accent);
+      box-shadow:0 0 0 3px rgba(14,165,233,0.12);
+    }
+    .hint{font-size:11px; color:var(--muted); margin-top:4px}
+    .seg{
+      display:flex; gap:6px; flex-wrap:wrap;
+      margin-bottom:8px;
+    }
+    .seg button{
+      padding:8px 10px;
+      border:1px solid var(--border);
+      background:#fff; color:var(--ink);
+      border-radius:8px;
+      cursor:pointer;
+      font-size:13px;
+    }
+    .seg button.active{
+      border-color:var(--accent);
+      color:#0369a1;
+      background:#e0f2fe;
+    }
+
+    .toolbar{
+      display:flex; flex-wrap:wrap; gap:8px;
+    }
+    .btn{
+      padding:10px 12px;
+      border:1px solid var(--border);
+      background:#fff; color:var(--ink);
+      border-radius:10px;
+      cursor:pointer;
+      font-size:14px;
+    }
+    .btn.primary{background:var(--accent); color:#fff; border-color:var(--accent)}
+    .btn.success{background:var(--ok); color:#fff; border-color:var(--ok)}
+    .btn.warn{background:var(--warning); color:#fff; border-color:var(--warning)}
+    .btn.danger{background:var(--danger); color:#fff; border-color:var(--danger)}
+    .btn.ghost{background:#fff}
+    .btn:disabled{opacity:.6; cursor:not-allowed}
+
+    .members{
+      border:1px dashed var(--border);
+      border-radius:12px;
+      padding:8px;
+      background:#fafafa;
+    }
+    .member{
+      background:#fff;
+      border:1px solid var(--border);
+      border-radius:12px;
+      margin:8px 0;
+      padding:10px;
+    }
+    .member header{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:8px; margin-bottom:8px;
+    }
+    .member-title{font-weight:700; font-size:14px}
+    .member-actions{display:flex; gap:8px}
+    .sign-row{
+      display:grid; grid-template-columns: 1fr 1fr; gap:10px;
+    }
+    .sign-pad{
+      border:1px solid var(--border);
+      border-radius:8px;
+      background:#fff;
+      position:relative;
+      height:100px;
+      display:flex; align-items:center; justify-content:center;
+      overflow:hidden;
+    }
+    .sign-pad canvas{width:100%; height:100%}
+    .sign-tools{
+      display:flex; gap:6px; margin-top:6px; flex-wrap:wrap;
+    }
+    .sign-tools .btn{font-size:12px; padding:6px 8px}
+
+    /* Preview area */
+    .preview{
+      background:#fff;
+      border:1px solid var(--border);
+      border-radius:12px;
+      padding:18px 20px;
+      font-size:15px;
+    }
+    .preview h1{
+      text-align:center; font-size:18px; margin:2px 0 10px 0;
+    }
+    .preview h3{
+      font-size:16px; margin:18px 0 8px 0;
+      border-bottom:1px dashed var(--border);
+      padding-bottom:6px;
+    }
+    .preview .line{margin:4px 0}
+    .placeholder{
+      color:var(--danger);
+      font-family: var(--mono);
+      font-weight:600;
+    }
+    .mono{font-family:var(--mono)}
+    .kv{display:flex; gap:8px; flex-wrap:wrap}
+    .kv .k{color:var(--muted)}
+    .kv .v{color:var(--ink)}
+
+    table{
+      width:100%; border-collapse:collapse; margin-top:8px;
+    }
+    th, td{
+      border:1px solid var(--border);
+      padding:8px;
+      text-align:center;
+      vertical-align:middle;
+      font-size:14px;
+    }
+    .sig-img{
+      max-width:220px; max-height:80px; object-fit:contain;
+    }
+
+    /* Print: only the preview prints */
+    @media print{
+      body{background:#fff}
+      .container{display:block}
+      .card:first-of-type{display:none !important}
+      .card:last-of-type{border:none; box-shadow:none}
+      .card:last-of-type header{display:none}
+      .preview{border:none; padding:0}
+      a[href]:after{content:""}
+    }
+
+    /* History panel */
+    .history{
+      display:none;
+      position:fixed; inset:0; background:rgba(0,0,0,0.4);
+      align-items:center; justify-content:center; padding:16px;
+      z-index:50;
+    }
+    .history.open{display:flex}
+    .history .panel{
+      width:min(920px, 96vw);
+      max-height:80vh; overflow:auto;
+      background:#fff; border-radius:14px; border:1px solid var(--border);
+      padding:16px;
+    }
+    .history h3{margin:0 0 10px 0}
+    .history-list{display:grid; grid-template-columns: 1fr; gap:10px}
+    .hist-item{
+      border:1px solid var(--border); border-radius:10px; padding:10px;
+      display:flex; align-items:center; justify-content:space-between; gap:8px;
+      background:#fcfcff;
+    }
+    .hist-meta{font-size:13px}
+    .hist-actions{display:flex; gap:8px}
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- ========== Left: Form builder (Persian UI) ========== -->
+    <section class="card" id="formCard">
+      <header>
+        <h2>فرم‌ساز | ورود اطلاعات [[...]] و مدیریت تاریخچه</h2>
+        <div class="toolbar">
+          <button class="btn" id="btnNew">شروع فرم جدید</button>
+          <button class="btn" id="btnHistory">تاریخچه</button>
+          <button class="btn success" id="btnSave">ذخیره پیشنویس</button>
+          <button class="btn primary" id="btnUpdate">به‌روزرسانی پیش‌نمایش</button>
+          <button class="btn warn" id="btnPrint">چاپ</button>
+        </div>
+      </header>
+
+      <div class="body">
+        <div class="grid">
+          <div class="col-12">
+            <label>عنوان پیشنویس برای ذخیره در تاریخچه</label>
+            <input type="text" id="draftTitle" placeholder="مثلاً: پرونده حارث نوحانی - ۱۴۰۳/۰۸/۱۵">
+          </div>
+
+          <!-- Header section -->
+          <div class="col-6">
+            <label>شهرستان</label>
+            <input type="text" id="county" placeholder="[[...]]">
+          </div>
+          <div class="col-6">
+            <label>تاریخ جلسه کمیسیون</label>
+            <div class="grid">
+              <div class="col-6">
+                <input type="date" id="sessionDateG">
+                <div class="hint">انتخاب میلادی → تبدیل خودکار به شمسی</div>
+              </div>
+              <div class="col-6">
+                <input type="text" id="sessionDateJ" placeholder="۱۴۰۳/۰۸/۱۵">
+                <div class="hint">ورود دستی شمسی → همگام‌سازی با میلادی</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Student info -->
+          <div class="col-12"><hr></div>
+          <div class="col-6">
+            <label>نام و نام خانوادگی دانش‌آموز</label>
+            <input type="text" id="studentName" placeholder="[[...]]">
+          </div>
+          <div class="col-6">
+            <label>نام پدر</label>
+            <input type="text" id="fatherName" placeholder="[[...]]">
+          </div>
+          <div class="col-6">
+            <label>تاریخ تولد</label>
+            <div class="grid">
+              <div class="col-6">
+                <input type="date" id="birthDateG">
+              </div>
+              <div class="col-6">
+                <input type="text" id="birthDateJ" placeholder="۱۳۹۰/۱۲/۲۰">
+              </div>
+            </div>
+          </div>
+          <div class="col-3">
+            <label>پایه تحصیلی فعلی</label>
+            <input type="text" id="currentGrade" placeholder="[[هفتم]]">
+          </div>
+          <div class="col-3">
+            <label>دوره تحصیلی</label>
+            <input type="text" id="educationLevel" placeholder="[[متوسطه اول]]">
+          </div>
+          <div class="col-12">
+            <label>آموزشگاه محل تحصیل</label>
+            <input type="text" id="schoolName" placeholder="[[شهید گریم داد جدگال باهوکلات]]">
+          </div>
+
+          <!-- Summary / deficiency -->
+          <div class="col-12"><hr></div>
+          <div class="col-4">
+            <label>سال تحصیلی قبلی</label>
+            <input type="text" id="prevYear" placeholder="۱۴۰۳-۱۴۰۲">
+          </div>
+          <div class="col-4">
+            <label>پایه قبلی</label>
+            <input type="text" id="prevGrade" placeholder="[[ششم]]">
+          </div>
+          <div class="col-4">
+            <label>سال تحصیلی مورد درخواست</label>
+            <input type="text" id="nextYear" placeholder="۱۴۰۴-۱۴۰۳">
+          </div>
+          <div class="col-6">
+            <label>پایه مورد درخواست</label>
+            <input type="text" id="nextGrade" placeholder="[[هفتم]]">
+          </div>
+          <div class="col-6">
+            <label>علت/نقص پرونده</label>
+            <input type="text" id="defectReason" placeholder="[[فاقد شناسنامه بودن]]">
+          </div>
+
+          <!-- Offender(s) -->
+          <div class="col-12"><hr></div>
+          <div class="col-4">
+            <label>نسبت متخلف</label>
+            <input type="text" id="offenderRelation" placeholder="[[برادر / خواهر]]">
+          </div>
+          <div class="col-4">
+            <label>سمت متخلف</label>
+            <input type="text" id="offenderTitle" placeholder="[[با سمت ...]]">
+          </div>
+          <div class="col-4">
+            <label>شماره نامه معرفی به هیئت</label>
+            <input type="text" id="letterNumber" placeholder="[[...]]">
+          </div>
+          <div class="col-6">
+            <label>تاریخ نامه</label>
+            <div class="grid">
+              <div class="col-6">
+                <input type="date" id="letterDateG">
+              </div>
+              <div class="col-6">
+                <input type="text" id="letterDateJ" placeholder="۱۴۰۳/۰۸/۲۰">
+              </div>
+            </div>
+          </div>
+
+          <!-- Commission opinion -->
+          <div class="col-12"><hr></div>
+          <div class="col-4">
+            <label>مستند قانونی (ماده/بند)</label>
+            <input type="text" id="articleRef" placeholder="[[۴ بند (۹)]]">
+          </div>
+          <div class="col-4">
+            <label>سال تحصیلی مورد موافقت</label>
+            <input type="text" id="approvalYear" placeholder="۱۴۰۴-۱۴۰۳">
+          </div>
+          <div class="col-4">
+            <label>پایه مورد موافقت</label>
+            <input type="text" id="approvalGrade" placeholder="[[هفتم]]">
+          </div>
+
+          <!-- Members -->
+          <div class="col-12"><hr></div>
+          <div class="col-12">
+            <label>اعضای کمیسیون (قابل افزودن/حذف)</label>
+            <div class="members" id="members"></div>
+            <div class="seg">
+              <button class="btn" id="btnAddMember">افزودن عضو</button>
+            </div>
+            <div class="hint">روی هر امضا می‌توانید بکشید یا تصویر امضا را بارگذاری کنید.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== Right: Preview/print ========== -->
+    <section class="card">
+      <header>
+        <h2>پیش‌نمایش فرم نهایی برای چاپ</h2>
+      </header>
+      <div class="body">
+        <div class="preview" id="preview">
+          <!-- Filled by JS -->
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ========== History modal ========== -->
+  <div class="history" id="historyModal" aria-hidden="true">
+    <div class="panel">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:8px;">
+        <h3>تاریخچه پیشنویس‌ها</h3>
+        <div class="seg">
+          <button class="btn" id="btnCloseHistory">بستن</button>
+          <button class="btn danger" id="btnClearAllHistory">حذف همه</button>
+        </div>
+      </div>
+      <div class="history-list" id="historyList"></div>
+    </div>
+  </div>
+
+  <script>
+    // ========== Utilities: Jalali/Gregorian conversion (pure JS) ==========
+    // Algorithm adapted to plain JS: g2d/d2g/j2d/d2j methods and wrappers.
+
+    function div(a,b){return Math.trunc(a/b)}
+    function mod(a,b){return a - b*div(a,b)}
+
+    // Gregorian date to JDN
+    function g2d(y,m,d){
+      var a = div(14 - m, 12)
+      var y2 = y + 4800 - a
+      var m2 = m + 12*a - 3
+      return d + div(153*m2 + 2,5) + 365*y2 + div(y2,4) - div(y2,100) + div(y2,400) - 32045
+    }
+    // JDN to Gregorian
+    function d2g(jdn){
+      var j = jdn + 32044
+      var g = div(j,146097)
+      var dg = mod(j,146097)
+      var c = div(div(dg,36524) + 1, 4)
+      var dc = dg - c*36524
+      var b = div(dc,1461)
+      var db = mod(dc,1461)
+      var a = div(div(db,365) + 1, 4)
+      var da = db - a*365
+      var y = g*400 + c*100 + b*4 + a
+      var m = div(5*da + 308,153) - 2
+      var d = da - div(153*m + 2,5) + 1
+      var y2 = y - 4800 + div(m + 2,12)
+      var m2 = mod(m + 2,12) + 1
+      return {gy:y2, gm:m2, gd:d}
+    }
+    // Jalali date to JDN
+    function j2d(jy,jm,jd){
+      var epbase = jy - (jy >= 0 ? 474 : 473)
+      var epyear = 474 + mod(epbase,2820)
+      return jd +
+        (jm <= 7 ? (jm - 1)*31 : (jm - 7)*30 + 186) +
+        div((epyear*682) - 110,2816) +
+        (epyear - 1)*365 +
+        div(epbase,2820)*1029983 + (1948320 - 1)
+    }
+    // JDN to Jalali
+    function d2j(jdn){
+      var depoch = jdn - j2d(475,1,1)
+      var cycle = div(depoch,1029983)
+      var cyear = mod(depoch,1029983)
+      var ycycle
+      if (cyear === 1029982){
+        ycycle = 2820
+      } else {
+        var aux1 = div(cyear,366)
+        var aux2 = mod(cyear,366)
+        ycycle = div(2134*aux1 + 2816*aux2 + 2815, 1028522) + aux1 + 1
+      }
+      var jy = ycycle + 2820*cycle + 474
+      if (jy <= 0) jy -= 1
+      var yday = jdn - j2d(jy,1,1) + 1
+      var jm, jd
+      if (yday <= 186){
+        jm = Math.ceil(yday/31)
+        jd = mod(yday,31); if (jd === 0) jd = 31
+      } else {
+        var yday2 = yday - 186
+        jm = Math.ceil(yday2/30) + 6
+        jd = mod(yday2,30); if (jd === 0) jd = 30
+      }
+      return {jy:jy, jm:jm, jd:jd}
+    }
+    function toJalali(gy,gm,gd){
+      var j = d2j(g2d(gy,gm,gd))
+      return j
+    }
+    function toGregorian(jy,jm,jd){
+      var g = d2g(j2d(jy,jm,jd))
+      return g
+    }
+    function pad(n){return String(n).padStart(2,'0')}
+    function fmtJ(j){return j ? (j.jy + '/' + pad(j.jm) + '/' + pad(j.jd)) : ''}
+    function fmtG(g){return g ? (g.gy + '-' + pad(g.gm) + '-' + pad(g.gd)) : ''}
+
+    function parseJalali(str){
+      if(!str) return null
+      var s = str.replaceAll('-', '/').trim()
+      var m = s.match(/^(\d{3,4})[\/](\d{1,2})[\/](\d{1,2})$/)
+      if(!m) return null
+      var jy = parseInt(m[1],10), jm = parseInt(m[2],10), jd = parseInt(m[3],10)
+      if(jm<1||jm>12||jd<1||jd>31) return null
+      return {jy, jm, jd}
+    }
+    function parseGregorian(str){
+      if(!str) return null
+      var m = str.match(/^(\d{4})-(\d{2})-(\d{2})$/)
+      if(!m) return null
+      return {gy:+m[1], gm:+m[2], gd:+m[3]}
+    }
+
+    // ========== State & helpers ==========
+    const $ = (s,root=document)=>root.querySelector(s)
+    const $$ = (s,root=document)=>Array.from(root.querySelectorAll(s))
+    const membersEl = $('#members')
+    let memberSeq = 0
+    let currentDraftId = null
+
+    function placeholderSpan(text='[[...]]'){
+      const span = document.createElement('span')
+      span.className = 'placeholder'
+      span.textContent = text
+      return span.outerHTML
+    }
+    function showOrPlaceholder(v){
+      const s = (v ?? '').toString().trim()
+      return s ? escapeHtml(s) : placeholderSpan()
+    }
+    function escapeHtml(s){
+      return s.replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]))
+    }
+
+    // ========== Members UI ==========
+    function addMember(memberData={}){
+      memberSeq++
+      const idx = memberSeq
+      const wrap = document.createElement('div')
+      wrap.className = 'member'
+      wrap.dataset.memberId = String(idx)
+      wrap.innerHTML = `
+        <header>
+          <div class="member-title">عضو شماره ${idx}</div>
+          <div class="member-actions">
+            <button class="btn ghost move-up" title="بالا">▲</button>
+            <button class="btn ghost move-down" title="پایین">▼</button>
+            <button class="btn danger remove">حذف</button>
+          </div>
+        </header>
+        <div class="grid">
+          <div class="col-6">
+            <label>نام و نام خانوادگی</label>
+            <input type="text" class="m-name" placeholder="[[...]]" value="${escapeHtml(memberData.name || '')}">
+          </div>
+          <div class="col-6">
+            <label>سمت</label>
+            <input type="text" class="m-role" placeholder="[[عضو کمیسیون]]" value="${escapeHtml(memberData.role || '')}">
+          </div>
+          <div class="col-12">
+            <label>امضا</label>
+            <div class="sign-row">
+              <div>
+                <div class="sign-pad">
+                  <canvas></canvas>
+                </div>
+                <div class="sign-tools">
+                  <button class="btn ghost draw-toggle">فعال/غیرفعال رسم</button>
+                  <button class="btn ghost clear-pad">پاک کردن امضا</button>
+                </div>
+              </div>
+              <div>
+                <input type="file" class="m-upload" accept="image/*">
+                <div class="hint">در صورت بارگذاری تصویر، همان چاپ می‌شود. در غیر این صورت امضای رسم‌شده چاپ می‌شود.</div>
+                <img class="upload-preview" style="display:none; margin-top:6px; max-width:220px; max-height:80px; object-fit:contain;" />
+              </div>
+            </div>
+          </div>
+        </div>
+      `
+      membersEl.appendChild(wrap)
+      setupSignaturePad(wrap, memberData.signature)
+      setupMemberControls(wrap)
+    }
+
+    function setupMemberControls(wrap){
+      const btnRemove = $('.remove', wrap)
+      const btnUp = $('.move-up', wrap)
+      const btnDown = $('.move-down', wrap)
+      btnRemove.addEventListener('click', ()=>{
+        wrap.remove()
+        renumberMembers()
+      })
+      btnUp.addEventListener('click', ()=>{
+        const prev = wrap.previousElementSibling
+        if(prev){ membersEl.insertBefore(wrap, prev); renumberMembers() }
+      })
+      btnDown.addEventListener('click', ()=>{
+        const next = wrap.nextElementSibling
+        if(next){ membersEl.insertBefore(next, wrap); renumberMembers() }
+      })
+      const upload = $('.m-upload', wrap)
+      const preview = $('.upload-preview', wrap)
+      upload.addEventListener('change', ()=>{
+        const file = upload.files?.[0]
+        if(!file){ preview.src=''; preview.style.display='none'; return }
+        const reader = new FileReader()
+        reader.onload = e=>{
+          preview.src = e.target.result
+          preview.style.display='block'
+        }
+        reader.readAsDataURL(file)
+      })
+    }
+
+    function renumberMembers(){
+      $$('.member').forEach((m,i)=>{
+        $('.member-title', m).textContent = 'عضو شماره ' + (i+1)
+      })
+    }
+
+    function setupSignaturePad(wrap, signatureDataUrl){
+      const canvas = $('canvas', wrap)
+      const ctx = canvas.getContext('2d')
+      const toggle = $('.draw-toggle', wrap)
+      const clearBtn = $('.clear-pad', wrap)
+      let drawingEnabled = true
+      let drawing = false
+      function resizeCanvas(){
+        const rect = canvas.parentElement.getBoundingClientRect()
+        canvas.width = rect.width
+        canvas.height = 100
+        // keep existing signature if any
+        if(signatureDataUrl){
+          const img = new Image()
+          img.onload = ()=>{ ctx.drawImage(img, 0, 0, canvas.width, canvas.height) }
+          img.src = signatureDataUrl
+        }
+      }
+      resizeCanvas()
+      window.addEventListener('resize', resizeCanvas)
+
+      function pos(e){
+        const r = canvas.getBoundingClientRect()
+        const x = (e.touches ? e.touches[0].clientX : e.clientX) - r.left
+        const y = (e.touches ? e.touches[0].clientY : e.clientY) - r.top
+        return {x,y}
+      }
+      function start(e){
+        if(!drawingEnabled) return
+        drawing = true
+        const p = pos(e)
+        ctx.beginPath()
+        ctx.moveTo(p.x, p.y)
+        e.preventDefault()
+      }
+      function move(e){
+        if(!drawingEnabled || !drawing) return
+        const p = pos(e)
+        ctx.lineTo(p.x, p.y)
+        ctx.strokeStyle = '#111'
+        ctx.lineWidth = 2
+        ctx.lineCap = 'round'
+        ctx.stroke()
+        e.preventDefault()
+      }
+      function end(){ drawing = false }
+
+      canvas.addEventListener('mousedown', start)
+      canvas.addEventListener('mousemove', move)
+      window.addEventListener('mouseup', end)
+      canvas.addEventListener('touchstart', start, {passive:false})
+      canvas.addEventListener('touchmove', move, {passive:false})
+      canvas.addEventListener('touchend', end)
+
+      toggle.addEventListener('click', ()=>{
+        drawingEnabled = !drawingEnabled
+        toggle.classList.toggle('active', drawingEnabled)
+      })
+      clearBtn.addEventListener('click', ()=>{
+        ctx.clearRect(0,0,canvas.width,canvas.height)
+      })
+    }
+
+    function collectMembers(){
+      return $$('.member').map(m=>{
+        const name = $('.m-name', m).value
+        const role = $('.m-role', m).value
+        const uploadImg = $('.upload-preview', m)
+        let signature = ''
+        if(uploadImg && uploadImg.src && uploadImg.style.display !== 'none'){
+          signature = uploadImg.src
+        } else {
+          const canvas = $('canvas', m)
+          signature = canvas.toDataURL('image/png')
+        }
+        return {name, role, signature}
+      })
+    }
+
+    function loadMembers(members){
+      membersEl.innerHTML = ''
+      memberSeq = 0
+      ;(members && members.length ? members : [{}, {}, {}]).forEach(addMember)
+    }
+
+    // ========== Date syncing ==========
+    function linkDatePair(gInput, jInput){
+      // When Gregorian changes → update Jalali
+      gInput.addEventListener('change', ()=>{
+        const g = parseGregorian(gInput.value)
+        if(g){
+          const j = toJalali(g.gy, g.gm, g.gd)
+          jInput.value = fmtJ(j)
+        } else {
+          jInput.value = ''
+        }
+        render()
+      })
+      // When Jalali changes → update Gregorian
+      jInput.addEventListener('input', ()=>{
+        const j = parseJalali(jInput.value)
+        if(j){
+          const g = toGregorian(j.jy, j.jm, j.jd)
+          gInput.value = fmtG(g)
+        } else {
+          gInput.value = ''
+        }
+        render()
+      })
+    }
+
+    linkDatePair($('#sessionDateG'), $('#sessionDateJ'))
+    linkDatePair($('#birthDateG'), $('#birthDateJ'))
+    linkDatePair($('#letterDateG'), $('#letterDateJ'))
+
+    // ========== Form -> Data ==========
+    function getFormData(){
+      return {
+        meta: {
+          county: $('#county').value,
+          sessionDateG: $('#sessionDateG').value,
+          sessionDateJ: $('#sessionDateJ').value
+        },
+        student: {
+          name: $('#studentName').value,
+          father: $('#fatherName').value,
+          birthG: $('#birthDateG').value,
+          birthJ: $('#birthDateJ').value,
+          currentGrade: $('#currentGrade').value,
+          educationLevel: $('#educationLevel').value,
+          school: $('#schoolName').value
+        },
+        study: {
+          prevYear: $('#prevYear').value,
+          prevGrade: $('#prevGrade').value,
+          nextYear: $('#nextYear').value,
+          nextGrade: $('#nextGrade').value,
+          reason: $('#defectReason').value
+        },
+        offender: {
+          relation: $('#offenderRelation').value,
+          title: $('#offenderTitle').value,
+          letterNo: $('#letterNumber').value,
+          letterG: $('#letterDateG').value,
+          letterJ: $('#letterDateJ').value
+        },
+        opinion: {
+          article: $('#articleRef').value,
+          approvalYear: $('#approvalYear').value,
+          approvalGrade: $('#approvalGrade').value
+        },
+        members: collectMembers(),
+        draftTitle: $('#draftTitle').value
+      }
+    }
+
+    function setFormData(data){
+      const d = data || {}
+      $('#county').value = d.meta?.county || ''
+      $('#sessionDateG').value = d.meta?.sessionDateG || ''
+      $('#sessionDateJ').value = d.meta?.sessionDateJ || ''
+
+      $('#studentName').value = d.student?.name || ''
+      $('#fatherName').value = d.student?.father || ''
+      $('#birthDateG').value = d.student?.birthG || ''
+      $('#birthDateJ').value = d.student?.birthJ || ''
+      $('#currentGrade').value = d.student?.currentGrade || ''
+      $('#educationLevel').value = d.student?.educationLevel || ''
+      $('#schoolName').value = d.student?.school || ''
+
+      $('#prevYear').value = d.study?.prevYear || ''
+      $('#prevGrade').value = d.study?.prevGrade || ''
+      $('#nextYear').value = d.study?.nextYear || ''
+      $('#nextGrade').value = d.study?.nextGrade || ''
+      $('#defectReason').value = d.study?.reason || ''
+
+      $('#offenderRelation').value = d.offender?.relation || ''
+      $('#offenderTitle').value = d.offender?.title || ''
+      $('#letterNumber').value = d.offender?.letterNo || ''
+      $('#letterDateG').value = d.offender?.letterG || ''
+      $('#letterDateJ').value = d.offender?.letterJ || ''
+
+      $('#articleRef').value = d.opinion?.article || ''
+      $('#approvalYear').value = d.opinion?.approvalYear || ''
+      $('#approvalGrade').value = d.opinion?.approvalGrade || ''
+      $('#draftTitle').value = d.draftTitle || ''
+
+      loadMembers(d.members || [])
+    }
+
+    // ========== Render preview ==========
+    function render(){
+      const d = getFormData()
+      const pv = $('#preview')
+      pv.innerHTML = `
+        <h1>نمونه برگ شماره ۴</h1>
+        <div class="line" style="text-align:center; margin-bottom:10px;">
+          صورت‌جلسه کمیته رسیدگی به مشکلات پرونده‌های تحصیلی دانش‌آموزان در مورخ
+          <span class="mono">${showOrPlaceholder(d.meta.sessionDateJ || convertGtoJ(d.meta.sessionDateG))}</span>
+          کمیسیون خاص شهرستان
+          <span class="mono">${showOrPlaceholder(d.meta.county)}</span>
+        </div>
+
+        <h3>مشخصات دانش‌آموز</h3>
+        <div class="kv">
+          <div class="k">نام و نام خانوادگی:</div><div class="v">${showOrPlaceholder(d.student.name)}</div>
+          <div class="k">نام پدر:</div><div class="v">${showOrPlaceholder(d.student.father)}</div>
+        </div>
+        <div class="kv">
+          <div class="k">متولد:</div><div class="v mono">${showOrPlaceholder(d.student.birthJ || convertGtoJ(d.student.birthG))}</div>
+          <div class="k">پایه تحصیلی فعلی:</div><div class="v">${showOrPlaceholder(d.student.currentGrade)}</div>
+          <div class="k">دوره تحصیلی:</div><div class="v">${showOrPlaceholder(d.student.educationLevel)}</div>
+        </div>
+        <div class="line">آموزشگاه محل تحصیل: <span class="mono">${showOrPlaceholder(d.student.school)}</span></div>
+
+        <h3>شرح مختصری از وضعیت تحصیلی دانش‌آموز با ذکر موضوع نقص پرونده تحصیلی</h3>
+        <div class="line">
+          دانش‌آموز <b>${showOrPlaceholder(d.student.name)}</b> در سال تحصیلی
+          <span class="mono">${showOrPlaceholder(d.study.prevYear)}</span>
+          در پایه <b>${showOrPlaceholder(d.study.prevGrade)}</b> مشغول به تحصیل بوده و در سال تحصیلی
+          <span class="mono">${showOrPlaceholder(d.study.nextYear)}</span>
+          تقاضای ثبت‌نام در پایه <b>${showOrPlaceholder(d.study.nextGrade)}</b> نموده ولی به علت
+          <b>${showOrPlaceholder(d.study.reason)}</b>
+          اجازه ثبت‌نام و ادامه تحصیل را ندارد.
+        </div>
+
+        <h3>متخلف یا متخلفین</h3>
+        <div class="line">نسبت: <b>${showOrPlaceholder(d.offender.relation)}</b></div>
+        <div class="line">سمت: <b>${showOrPlaceholder(d.offender.title)}</b></div>
+        <div class="line">در ارتباط با این پرونده تحصیلی متخلف می‌باشد.</div>
+        <div class="kv">
+          <div class="k">طی نامه شماره:</div><div class="v mono">${showOrPlaceholder(d.offender.letterNo)}</div>
+          <div class="k">تاریخ:</div><div class="v mono">${showOrPlaceholder(d.offender.letterJ || convertGtoJ(d.offender.letterG))}</div>
+          <div class="k">به هیئت رسیدگی به تخلفات اداری معرفی شده است.</div>
+        </div>
+
+        <h3>اظهار نظر کمیسیون</h3>
+        <div class="line">
+          با استناد ماده <b>${showOrPlaceholder(d.opinion.article)}</b> آیین‌نامه کمیسیون خاص مناطق و نواحی و با نظر اعضای کمیسیون، نسبت به ثبت‌نام دانش‌آموز
+          <b>${showOrPlaceholder(d.student.name)}</b>
+          تا پایان سال تحصیلی <span class="mono">${showOrPlaceholder(d.opinion.approvalYear)}</span> موافقت و به نامبرده اجازه ثبت‌نام و ادامه تحصیل در پایه
+          <b>${showOrPlaceholder(d.opinion.approvalGrade)}</b> داده می‌شود.
+        </div>
+
+        <h3>اعضاء کمیسیون خاص منطقه</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>ردیف</th>
+              <th>نام و نام خانوادگی</th>
+              <th>سمت</th>
+              <th>امضاء</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${ (d.members && d.members.length ? d.members : []).map((m,i)=>`
+              <tr>
+                <td>${i+1}</td>
+                <td>${showOrPlaceholder(m.name)}</td>
+                <td>${showOrPlaceholder(m.role || 'عضو کمیسیون')}</td>
+                <td>${ m.signature ? `<img class="sig-img" src="${m.signature}" alt="امضای عضو">` : placeholderSpan('[[امضاء]]') }</td>
+              </tr>
+            `).join('') }
+            ${ (!d.members || d.members.length===0) ? `
+              <tr><td>1</td><td>${placeholderSpan()}</td><td>${placeholderSpan('[[عضو کمیسیون]]')}</td><td>${placeholderSpan('[[امضاء]]')}</td></tr>
+            ` : '' }
+          </tbody>
+        </table>
+      `
+    }
+    function convertGtoJ(gStr){
+      const g = parseGregorian(gStr || '')
+      return g ? fmtJ(toJalali(g.gy, g.gm, g.gd)) : ''
+    }
+
+    // ========== Wire inputs for live preview ==========
+    $$('#formCard input, #formCard textarea, #formCard select').forEach(el=>{
+      el.addEventListener('input', render)
+      el.addEventListener('change', render)
+    })
+
+    // ========== History using localStorage ==========
+    const LS_KEY = 'commission_form_drafts_v1'
+
+    function loadAllDrafts(){
+      try{
+        const raw = localStorage.getItem(LS_KEY)
+        return raw ? JSON.parse(raw) : []
+      }catch(e){ return [] }
+    }
+    function saveAllDrafts(list){
+      localStorage.setItem(LS_KEY, JSON.stringify(list))
+    }
+    function saveCurrentDraft(){
+      const list = loadAllDrafts()
+      const data = getFormData()
+      const now = new Date()
+      const item = {
+        id: currentDraftId || ('d_' + now.getTime()),
+        title: (data.draftTitle || ('پیشنویس بدون عنوان - ' + now.toLocaleString('fa-IR'))),
+        timestamp: now.toISOString(),
+        data
+      }
+      const idx = list.findIndex(x=>x.id===item.id)
+      if(idx>=0) list[idx]=item; else list.unshift(item)
+      saveAllDrafts(list)
+      currentDraftId = item.id
+      notify('پیشنویس ذخیره شد.', 'ok')
+      return item
+    }
+    function renderHistory(){
+      const list = loadAllDrafts()
+      const box = $('#historyList')
+      box.innerHTML = ''
+      if(list.length===0){
+        box.innerHTML = `<div class="hint">تاریخچه‌ای موجود نیست.</div>`
+        return
+      }
+      list.forEach(it=>{
+        const row = document.createElement('div')
+        row.className = 'hist-item'
+        row.innerHTML = `
+          <div class="hist-meta">
+            <div><b>${escapeHtml(it.title)}</b></div>
+            <div class="hint">شناسه: ${it.id}</div>
+            <div class="hint">زمان: ${new Date(it.timestamp).toLocaleString('fa-IR')}</div>
+          </div>
+          <div class="hist-actions">
+            <button class="btn" data-act="load">بارگذاری</button>
+            <button class="btn success" data-act="rename">تغییر عنوان</button>
+            <button class="btn danger" data-act="delete">حذف</button>
+          </div>
+        `
+        $('.hist-actions [data-act="load"]', row).addEventListener('click', ()=>{
+          currentDraftId = it.id
+          setFormData(it.data)
+          render()
+          closeHistory()
+          notify('پیشنویس بارگذاری شد.', 'ok')
+        })
+        $('.hist-actions [data-act="rename"]', row).addEventListener('click', ()=>{
+          const title = prompt('عنوان جدید پیشنویس:', it.title)
+          if(title && title.trim()){
+            it.title = title.trim()
+            const list2 = loadAllDrafts().map(x=>x.id===it.id?it:x)
+            saveAllDrafts(list2)
+            renderHistory()
+          }
+        })
+        $('.hist-actions [data-act="delete"]', row).addEventListener('click', ()=>{
+          if(confirm('این پیشنویس حذف شود؟')){
+            const list2 = loadAllDrafts().filter(x=>x.id!==it.id)
+            saveAllDrafts(list2)
+            renderHistory()
+          }
+        })
+        box.appendChild(row)
+      })
+    }
+    function openHistory(){
+      renderHistory()
+      $('#historyModal').classList.add('open')
+      $('#historyModal').setAttribute('aria-hidden','false')
+    }
+    function closeHistory(){
+      $('#historyModal').classList.remove('open')
+      $('#historyModal').setAttribute('aria-hidden','true')
+    }
+
+    // ========== Notifications (lightweight) ==========
+    function notify(msg, type='info'){
+      const n = document.createElement('div')
+      n.textContent = msg
+      n.style.position='fixed'
+      n.style.bottom='16px'
+      n.style.left='50%'
+      n.style.transform='translateX(-50%)'
+      n.style.background= type==='ok' ? '#16a34a' : (type==='warn' ? '#d97706' : '#0ea5e9')
+      n.style.color='#fff'
+      n.style.padding='10px 14px'
+      n.style.borderRadius='10px'
+      n.style.boxShadow='0 6px 20px rgba(0,0,0,0.2)'
+      n.style.zIndex='100'
+      document.body.appendChild(n)
+      setTimeout(()=>n.remove(), 1800)
+    }
+
+    // ========== Controls ==========
+    $('#btnAddMember').addEventListener('click', ()=>{
+      addMember({})
+      render()
+    })
+    $('#btnUpdate').addEventListener('click', render)
+    $('#btnPrint').addEventListener('click', ()=>{
+      render()
+      window.print()
+    })
+    $('#btnSave').addEventListener('click', ()=>{
+      saveCurrentDraft()
+      renderHistory() // refresh
+    })
+    $('#btnHistory').addEventListener('click', openHistory)
+    $('#btnCloseHistory').addEventListener('click', closeHistory)
+    $('#btnClearAllHistory').addEventListener('click', ()=>{
+      if(confirm('کل تاریخچه حذف شود؟')){ localStorage.removeItem(LS_KEY); renderHistory() }
+    })
+    $('#btnNew').addEventListener('click', ()=>{
+      if(!confirm('ایجاد فرم جدید؟ فقط فیلدهای قابل تغییر خالی می‌شود.')) return
+      currentDraftId = null
+      setFormData({
+        meta:{county:'', sessionDateG:'', sessionDateJ:''},
+        student:{name:'', father:'', birthG:'', birthJ:'', currentGrade:'', educationLevel:'', school:''},
+        study:{prevYear:'', prevGrade:'', nextYear:'', nextGrade:'', reason:''},
+        offender:{relation:'', title:'', letterNo:'', letterG:'', letterJ:''},
+        opinion:{article:'', approvalYear:'', approvalGrade:''},
+        members:[]
+      })
+      render()
+      notify('فرم جدید ایجاد شد.', 'ok')
+    })
+
+    // ========== Initial boot ==========
+    loadMembers([{}, {}, {}]) // starter rows
+    render()
+
+  </script>
+</body>
+</html>
