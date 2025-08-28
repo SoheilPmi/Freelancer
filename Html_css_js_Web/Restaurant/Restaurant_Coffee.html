@@ -7,8 +7,8 @@
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" xintegrity="sha512-iecdLpA+3U2aXJjA/Q5t0p+8M+lJb/J+vEwE+0/A+8M+lJb/J+vEwE+0/A+8M+lJb/J+vEwE+0/A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <!-- Inter Font -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" xintegrity="sha512-iecdLpA+3U2aXJjA/Q5t0p+8M+lJb/J+vEwE+0/A+8M+lJb/J+vEwE+0/A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Vazirmatn Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&display=swap" rel="stylesheet">
@@ -19,6 +19,40 @@
             color: #4a3e35; /* Dark brown */
             direction: rtl;
             overflow-x: hidden; /* Prevents horizontal scroll */
+            position: relative;
+        }
+        
+        /* Particle background container */
+        .particle-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            background-color: #d3b49c; /* Lighter coffee color */
+            border-radius: 50%;
+            opacity: 0;
+            animation: moveParticle 15s infinite ease-in-out;
+        }
+
+        @keyframes moveParticle {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 0;
+            }
+            50% {
+                opacity: 0.5;
+            }
+            100% {
+                transform: translateY(-100vh) rotate(360deg);
+                opacity: 0;
+            }
         }
 
         .container {
@@ -116,7 +150,11 @@
         
         /* Category button style */
         .category-btn {
-            transition: background-color 0.2s, color 0.2s;
+            transition: background-color 0.2s, color 0.2s, transform 0.2s;
+        }
+
+        .category-btn:hover {
+             transform: scale(1.05);
         }
         
         /* Loading spinner */
@@ -140,9 +178,11 @@
     </style>
 </head>
 <body class="p-6">
-
+    <!-- Particle Background -->
+    <div class="particle-container"></div>
+    
     <!-- بخش اصلی منو -->
-    <div class="container mx-auto">
+    <div class="container mx-auto relative z-10">
         <header class="text-center my-8 md:my-12">
             <h1 class="text-4xl md:text-5xl font-bold text-[#4a3e35]">منوی کافه ما</h1>
             <p class="mt-2 text-xl md:text-2xl text-[#6a5f56]">لطفاً نوشیدنی یا غذای مورد علاقه‌تان را انتخاب کنید</p>
@@ -185,16 +225,16 @@
                 
                 <!-- دکمه‌های جدید هوش مصنوعی -->
                 <div class="flex flex-col md:flex-row gap-4 mt-6 justify-center">
-                    <button id="gemini-pairing-btn" class="bg-[#a0522d] text-white px-4 py-2 rounded-full font-bold shadow-lg transition-all duration-300 transform hover:scale-105">
+                    <button id="gemini-pairing-btn" class="bg-[#a0522d] text-white px-4 py-2 rounded-full font-bold shadow-lg transition-all duration-300 transform hover:scale-105 active:bg-[#8b4625]">
                         <i class="fas fa-magic ml-2"></i>✨ پیشنهاد جفت‌سازی ✨
                     </button>
-                    <button id="gemini-recipe-btn" class="bg-[#4a3e35] text-white px-4 py-2 rounded-full font-bold shadow-lg transition-all duration-300 transform hover:scale-105">
+                    <button id="gemini-recipe-btn" class="bg-[#4a3e35] text-white px-4 py-2 rounded-full font-bold shadow-lg transition-all duration-300 transform hover:scale-105 active:bg-[#342f2b]">
                         <i class="fas fa-utensils ml-2"></i>✨ دستور پخت سریع ✨
                     </button>
                 </div>
                 
                 <!-- ناحیه نمایش پاسخ هوش مصنوعی -->
-                <div id="gemini-response" class="mt-8 p-4 bg-[#f7f3e9] rounded-2xl shadow-inner text-right leading-7">
+                <div id="gemini-response" class="mt-8 p-4 bg-[#f7f3e9] rounded-2xl shadow-inner text-right leading-7 hidden">
                     <h3 class="text-lg font-bold mb-2">پاسخ هوش مصنوعی</h3>
                     <div id="gemini-text" class="text-sm"></div>
                 </div>
@@ -286,6 +326,7 @@
         const geminiRecipeBtn = document.getElementById('gemini-recipe-btn');
         const geminiResponseContainer = document.getElementById('gemini-response');
         const geminiText = document.getElementById('gemini-text');
+        const particleContainer = document.querySelector('.particle-container');
 
         // متغیر برای ذخیره آیتم فعلی در حال نمایش
         let currentItem = null;
@@ -305,14 +346,20 @@
                 onerror="this.onerror=null;this.src='https://placehold.co/400x300/d3b49c/fff?text=Image+Not+Found';">
             `;
             
-            // نمایش پاپ‌آپ با انیمیشن
-            modalOverlay.classList.add('active');
-            modalContainer.classList.add('active');
+            // نمایش پاپ‌آپ با انیمیشن نرم
+            modalOverlay.style.display = 'block';
+            modalContainer.style.display = 'block';
+            
+            setTimeout(() => {
+                modalOverlay.classList.add('active');
+                modalContainer.classList.add('active');
+            }, 10);
+            
             document.body.style.overflow = 'hidden'; // جلوگیری از اسکرول صفحه اصلی
             
             // پاک کردن پاسخ قبلی هوش مصنوعی
             geminiText.innerHTML = '';
-            geminiResponseContainer.style.display = 'none';
+            geminiResponseContainer.classList.add('hidden');
         };
 
         // تابع برای مخفی کردن پاپ‌آپ
@@ -322,6 +369,7 @@
             // تاخیر در مخفی کردن overlay تا انیمیشن پاپ‌آپ تمام شود
             setTimeout(() => {
                 modalOverlay.style.display = 'none';
+                modalContainer.style.display = 'none';
             }, 400); // زمان transition در CSS
             document.body.style.overflow = 'auto'; // اجازه اسکرول مجدد به صفحه اصلی
         };
@@ -400,11 +448,12 @@
         closeModalBtn.addEventListener('click', hideModal);
         modalOverlay.addEventListener('click', hideModal);
 
-        // رندر اولیه منو با تمامی آیتم‌ها
+        // رندر اولیه منو با تمامی آیتم‌ها و ایجاد ذرات
         window.addEventListener('load', () => {
             filterMenu('all');
             document.querySelector('.all-btn').classList.add('bg-[#a0522d]', 'text-white');
             modalOverlay.style.display = 'none'; // اطمینان از مخفی بودن در ابتدا
+            createParticles();
         });
         
         // ------------- بخش جدید برای ارتباط با Gemini API -------------
@@ -446,7 +495,7 @@
 
         // تابع برای نمایش پاسخ و مدیریت وضعیت بارگذاری
         const displayGeminiResponse = async (prompt, type) => {
-            geminiResponseContainer.style.display = 'block';
+            geminiResponseContainer.classList.remove('hidden');
             geminiText.innerHTML = `<div class="flex items-center justify-center gap-2"><div class="spinner"></div><span class="text-sm">در حال فکر کردن...</span></div>`;
 
             const response = await callGeminiApi(prompt);
@@ -483,7 +532,29 @@
             `;
             displayGeminiResponse(prompt, 'recipe');
         });
+
+        // تابع برای ایجاد ذرات پس‌زمینه
+        const createParticles = () => {
+            const numParticles = 20;
+            for (let i = 0; i < numParticles; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                const size = Math.random() * 10 + 5; // اندازه بین 5 تا 15 پیکسل
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.left = `${Math.random() * 100}vw`;
+                particle.style.animationDelay = `-${Math.random() * 10}s`; // شروع انیمیشن در زمان‌های مختلف
+                particleContainer.appendChild(particle);
+            }
+        };
         
+        // رندر اولیه منو با تمامی آیتم‌ها و ایجاد ذرات
+        window.addEventListener('load', () => {
+            filterMenu('all');
+            document.querySelector('.all-btn').classList.add('bg-[#a0522d]', 'text-white');
+            modalOverlay.style.display = 'none'; // اطمینان از مخفی بودن در ابتدا
+            createParticles();
+        });
     </script>
 </body>
 </html>
