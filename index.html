@@ -101,6 +101,8 @@
       text-decoration:none;
       transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease, background .25s ease;
       box-shadow: 0 6px 20px rgba(0,0,0,.25), inset 0 0 0 1px rgba(126,240,255,.06);
+      text-align: center;
+      font-weight: 600;
     }
     .item:hover{
       transform: translateY(-3px);
@@ -108,27 +110,43 @@
       box-shadow: 0 12px 30px rgba(0,0,0,.35), 0 0 24px rgba(126,240,255,.25);
       background: linear-gradient(180deg, rgba(16,22,28,.65), rgba(12,16,20,.55));
     }
-    .item .top{
-      display:flex; align-items:center; justify-content:space-between;
-      gap:12px; margin-bottom:6px;
+    
+    .view-content-btn {
+        margin-left: 8px;
+        padding: 4px 8px;
+        font-size: 12px;
+        background-color: transparent;
+        border: 1px solid var(--muted);
+        color: var(--muted);
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s ease;
     }
-    .label{
-      font-weight:700;
-      letter-spacing:.2px;
-      color:#e8fbff;
-    }
-    .go{
-      color:var(--link);
-      font-weight:600;
-      opacity:.9;
-    }
-    .desc{
-      color:var(--muted);
-      font-size:14px;
-      line-height:1.5;
-      margin:0;
+    .view-content-btn:hover {
+        background-color: rgba(126,240,255,.1);
+        border-color: var(--link);
+        color: var(--link);
     }
 
+    #file-content-container {
+      margin-top: 20px;
+      padding: 16px;
+      border-radius: 14px;
+      background: rgba(12, 16, 20, 0.45);
+      border: 1px solid rgba(120, 160, 200, 0.1);
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
+      display: none; /* Initially hidden */
+    }
+
+    #file-content-container pre {
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      font-family: monospace;
+      color: var(--ink);
+      font-size: 14px;
+      margin: 0;
+    }
+    
     .footer{
       margin-top:24px;
       text-align:center;
@@ -136,7 +154,7 @@
       font-size:13px;
       letter-spacing:.3px;
     }
-
+    
     /* Respect reduced motion */
     @media (prefers-reduced-motion: reduce){
       .item:hover{ transform:none }
@@ -149,46 +167,38 @@
   <div class="wrap">
     <main class="panel" role="main">
       <h1 class="title">Soheil pourmokhtari</h1>
-            <h1 class="title">
-            سهیل پورمختاری 
-            </h1>
+      <h1 class="title">
+      سهیل پورمختاری 
+      </h1>
 
-<div class="freelancer-intro" style="margin: 40px auto; max-width: 720px; text-align: center; padding: 24px; background: linear-gradient(180deg, rgba(16,22,28,.65), rgba(12,16,20,.55)); border-radius: 14px; border: 1px solid rgba(126,240,255,.15);">
+            <!-- The list of links will be populated dynamically by JavaScript -->
+      <nav class="list" aria-label="Available pages">
+        <div style="text-align: center; color: var(--muted);" id="loading-message">در حال بارگذاری لینک‌ها...</div>
+      </nav>
+
+      <!-- Container to display file content -->
+      <div id="file-content-container">
+        <pre id="file-content-text"></pre>
+      </div>
+      
+
+      <div class="freelancer-intro" style="margin: 40px auto; max-width: 720px; text-align: center; padding: 24px; background: linear-gradient(180deg, rgba(16,22,28,.65), rgba(12,16,20,.55)); border-radius: 14px; border: 1px solid rgba(126,240,255,.15);">
        <h2 style="margin: 0 0 16px 0; font-size: 22px; font-weight: 700; color: #e8fbff;">توسعه‌دهنده خلاق و متعهد</h2>
        <p style="margin: 0; color: var(--muted); line-height: 1.7;">
          با ترکیب تخصص فنی و درک عمیق از نیازهای کاربران، پروژه‌هایی خلق می‌کنم که هم زیبا هستند هم کاربردی. 
          تمرکز من بر ارائه راه‌حل‌های پایدار و بهینه است، با تعهدی بی‌چون‌وچرا به کیفیت و رضایت شما. 
          هر پروژه فرصتی برای نوآوری و ارزش‌آفرینی واقعی است.
        </p>
-     </div>
+      </div>
 
-<div class="freelancer-intro" style="margin: 40px auto; max-width: 720px; text-align: center; padding: 24px; background: linear-gradient(180deg, rgba(16,22,28,.65), rgba(12,16,20,.55)); border-radius: 14px; border: 1px solid rgba(126,240,255,.15);">
-       <h2 style="margin: 0 0 16px 0; font-size: 22px; font-weight: 700; color: #e8fbff;">Creative and Committed Developer</h2>
-       <p style="margin: 0; color: var(--muted); line-height: 1.7;">
-         By combining technical expertise with a deep understanding of user needs, I create projects that are both beautiful and functional. 
-         My focus is on delivering sustainable and optimized solutions, with an unwavering commitment to quality and your satisfaction. 
-         Each project is an opportunity for innovation and real value creation.
-       </p>
-     </div>
-
-
-      <nav class="list" aria-label="Available pages">
-        <a class="item" href="Html_css_js_Web/Form_Tasmeem_Komision_Khas.html" target="_blank" rel="noopener">
-          <div class="top">
-            <span class="label">Form: Special Commission Decision</span>
-            <span class="go">Open ↗</span>
-          </div>
-          <p class="desc">Proceed to the commission decision form. Optimized for Persian UI with Jalali dates.</p>
-        </a>
-
-        <!-- Add more items as needed -->
-        <!--
-        <a class="item" href="HtmlcssjsWeb/AnotherForm.html" target="_blank" rel="noopener">
-          <div class="top"><span class="label">Form: Another Example</span><span class="go">Open ↗</span></div>
-          <p class="desc">A placeholder for your next module.</p>
-        </a>
-        -->
-      </nav>
+      <div class="freelancer-intro" style="margin: 40px auto; max-width: 720px; text-align: center; padding: 24px; background: linear-gradient(180deg, rgba(16,22,28,.65), rgba(12,16,20,.55)); border-radius: 14px; border: 1px solid rgba(126,240,255,.15);">
+        <h2 style="margin: 0 0 16px 0; font-size: 22px; font-weight: 700; color: #e8fbff;">Creative and Committed Developer</h2>
+        <p style="margin: 0; color: var(--muted); line-height: 1.7;">
+          By combining technical expertise with a deep understanding of user needs, I create projects that are both beautiful and functional. 
+          My focus is on delivering sustainable and optimized solutions, with an unwavering commitment to quality and your satisfaction. 
+          Each project is an opportunity for innovation and real value creation.
+        </p>
+      </div>
 
       <p class="footer">Crafted with clarity and subtle robotics • Minimal GPU/CPU footprint</p>
     </main>
@@ -380,6 +390,122 @@
 
       start()
     })();
+
+    // New code to fetch and render dynamic links from GitHub
+    document.addEventListener('DOMContentLoaded', () => {
+        const githubUrl = 'https://raw.githubusercontent.com/SoheilPmi/Freelancer/refs/heads/main/README.md';
+        const linkList = document.querySelector('.list');
+        const loadingMessage = document.getElementById('loading-message');
+        const fileContentContainer = document.getElementById('file-content-container');
+        const fileContentText = document.getElementById('file-content-text');
+
+        let readmeContent = '';
+
+        /**
+         * Toggles the visibility of the file content and updates the button text.
+         */
+        function toggleFileContent(button) {
+            const isVisible = fileContentContainer.style.display === 'block';
+            if (isVisible) {
+                fileContentContainer.style.display = 'none';
+                button.textContent = 'نمایش محتویات فایل';
+            } else {
+                fileContentText.textContent = readmeContent;
+                fileContentContainer.style.display = 'block';
+                button.textContent = 'پنهان کردن محتویات';
+            }
+        }
+
+        /**
+         * Extracts file name from a URL.
+         * @param {string} url The URL string.
+         * @returns {string} The extracted file name.
+         */
+        function getFileName(url) {
+            // Get the part of the URL after the last slash
+            const parts = url.split('/');
+            let fileName = parts[parts.length - 1];
+            // Remove any query parameters
+            fileName = fileName.split('?')[0];
+            return fileName;
+        }
+
+        /**
+         * Fetches and parses Markdown content to find links, then creates UI elements.
+         */
+        function fetchAndCreateLinks() {
+            if (loadingMessage) {
+                loadingMessage.style.display = 'block';
+            }
+
+            fetch(githubUrl)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.text();
+                })
+                .then(markdownText => {
+                    readmeContent = markdownText; // Store the content for later use
+
+                    if (loadingMessage) {
+                        loadingMessage.style.display = 'none';
+                    }
+                    linkList.innerHTML = '';
+
+                    // Regex to find URLs inside square brackets like [https://...]
+                    const urlRegex = /\[(https?:\/\/[^\]]+)\]/g;
+                    let match;
+                    let hasLinks = false;
+                    
+                    while ((match = urlRegex.exec(markdownText)) !== null) {
+                        const url = match[1];
+                        const fileName = getFileName(url);
+                        hasLinks = true;
+
+                        // Create the main link element (button)
+                        const linkButton = document.createElement('a');
+                        linkButton.className = 'item';
+                        linkButton.href = url;
+                        linkButton.target = '_blank';
+                        linkButton.rel = 'noopener noreferrer';
+                        linkButton.textContent = fileName;
+
+                        linkList.appendChild(linkButton);
+                    }
+
+                    if (!hasLinks) {
+                        const noLinksMessage = document.createElement('div');
+                        noLinksMessage.style.textAlign = 'center';
+                        noLinksMessage.style.color = 'var(--muted)';
+                        noLinksMessage.style.display = 'flex';
+                        noLinksMessage.style.alignItems = 'center';
+                        noLinksMessage.style.justifyContent = 'center';
+                        
+                        const textSpan = document.createElement('span');
+                        textSpan.textContent = 'هیچ لینکی در فایل README.md پیدا نشد.';
+                        
+                        const viewContentBtn = document.createElement('button');
+                        viewContentBtn.className = 'view-content-btn';
+                        viewContentBtn.textContent = 'نمایش محتویات فایل';
+                        viewContentBtn.onclick = () => toggleFileContent(viewContentBtn);
+
+                        noLinksMessage.appendChild(textSpan);
+                        noLinksMessage.appendChild(viewContentBtn);
+                        linkList.appendChild(noLinksMessage);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching links:', error);
+                    if (loadingMessage) {
+                        loadingMessage.style.display = 'block';
+                        loadingMessage.textContent = 'خطا در بارگذاری لینک‌ها. لطفاً بعداً دوباره امتحان کنید.';
+                    }
+                });
+        }
+        
+        fetchAndCreateLinks();
+    });
   </script>
 </body>
 </html>
