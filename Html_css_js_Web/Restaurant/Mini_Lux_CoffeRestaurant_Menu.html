@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>منوی دیجیتال کافه</title>
+  <style>
+    /* Reset */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #121212;
+      color: #fdfdfd;
+      overflow-x: hidden;
+      position: relative;
+      min-height: 100vh;
+    }
+
+    /* Particles Background */
+    #particles-js {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: -1;
+    }
+
+    /* Header & Nav */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem;
+      border-bottom: 1px solid #333;
+      backdrop-filter: blur(10px);
+    }
+
+    .logo {
+      width: 120px; height: 40px;
+      background: #333;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .logo img {
+      height: 100%;
+      object-fit: contain;
+    }
+
+    nav {
+      display: flex;
+    }
+
+    nav button {
+      background: none;
+      border: none;
+      color: #fdfdfd;
+      margin: 0 0.5rem;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      position: relative;
+      transition: color 0.3s;
+    }
+
+    nav button:hover,
+    nav button.active {
+      color: #e1b12c;
+    }
+
+    nav button::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 50%;
+      width: 0; height: 2px;
+      background: #e1b12c;
+      transition: width 0.3s, left 0.3s;
+    }
+
+    nav button:hover::after,
+    nav button.active::after {
+      width: 100%; left: 0;
+    }
+
+    main {
+      padding: 1rem;
+    }
+
+    /* Sections & Items */
+    .section {
+      display: none;
+      animation: fadeIn 0.5s ease-in-out;
+    }
+
+    .section.active { display: block; }
+
+    .items {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .item-card {
+      background: #1e1e1e;
+      border-radius: 8px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .item-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+    }
+
+    .item-card img {
+      width: 100%;
+      height: 100px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .item-content {
+      padding: 0.75rem;
+    }
+
+    .item-content h3 {
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+      color: #e1b12c;
+    }
+
+    .item-content p {
+      font-size: 0.9rem;
+      margin-bottom: 0.75rem;
+      line-height: 1.3;
+    }
+
+    .item-content .price {
+      font-weight: bold;
+      text-align: left;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Modal */
+    .modal {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.85);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      z-index: 10;
+    }
+
+    .modal.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .modal-content {
+      background: #1e1e1e;
+      border-radius: 8px;
+      max-width: 90%;
+      max-height: 90%;
+      padding: 1rem;
+      overflow-y: auto;
+      position: relative;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .modal-content img {
+      width: 100%;
+      border-radius: 4px;
+      margin-bottom: 1rem;
+      object-fit: cover;
+    }
+
+    .modal-content h3 {
+      margin-bottom: 0.5rem;
+      color: #e1b12c;
+    }
+
+    .modal-content p {
+      margin-bottom: 1rem;
+      line-height: 1.5;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 0.5rem; left: 0.5rem;
+            background:black;
+      border: 2px solid #e1b12c;
+      color: #e1b12c;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    .close-btn:hover {
+      background: #e1b12c;
+      color: #121212;
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 480px) {
+      .items { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
+      .item-card img { height: 80px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Particles Background -->
+  <div id="particles-js"></div>
+
+  <!-- Header -->
+  <header>
+    <div class="logo">
+      <img src="
+      https://demo.cgkok.com/2023/1/img/starbucks-coffee-logo-1.png
+      "
+           alt="لوگوی استارباکس">
+    </div>
+    <nav>
+      <button class="active" data-target="drinks">نوشیدنی</button>
+      <button data-target="desserts">دسر</button>
+    </nav>
+  </header>
+
+  <!-- Main Content -->
+  <main>
+    <section id="drinks" class="section active">
+      <div class="items">
+        <div class="item-card">
+          <img src="https://images.unsplash.com/photo-1511920170033-f8396924c348?auto=format&fit=crop&w=300&q=80"
+               alt="قهوه اسپرسو">
+          <div class="item-content">
+            <h3>اسپرسو</h3>
+            <p>اسپرسوی اصیل ایتالیایی با کرمای خامه‌ای، تلخی متعادل و عطری که شما را بلافاصله سرحال می‌کند.</p>
+            <div class="price">۲۵۰۰۰ تومان</div>
+          </div>
+        </div>
+
+        <div class="item-card">
+          <img src="https://images.unsplash.com/photo-1498804103079-a6351b050096?auto=format&fit=crop&w=300&q=80"
+               alt="کاپوچینو">
+          <div class="item-content">
+            <h3>کاپوچینو</h3>
+            <p>دسرِ مایع با شیر کف‌کرده‌ی سبک و لطیف، روی پایه‌ی اسپرسو قوی؛ بهترین انتخاب برای لحظاتی آرام.</p>
+            <div class="price">۳۰۰۰۰ تومان</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="desserts" class="section">
+      <div class="items">
+        <div class="item-card">
+          <img src="https://images.unsplash.com/photo-1600891964599-f61ba0e24092?auto=format&fit=crop&w=300&q=80"
+               alt="چیزکیک">
+          <div class="item-content">
+            <h3>چیزکیک</h3>
+            <p>پایه‌ی بیسکویتی کره‌ای، پنیر ماسکارپونه‌ی تازه و چاشنی‌های میوه‌ای جنگلی برای تعادل بی‌نظیر.</p>
+            <div class="price">۴۰۰۰۰ تومان</div>
+          </div>
+        </div>
+
+        <div class="item-card">
+          <img src="https://tabarok.ir/en/storage/2023/06/French-pasta2-750x490.jpg"
+               alt="ماکارون">
+          <div class="item-content">
+            <h3>ماکارون فرانسوی</h3>
+            <p>ساختمانِ بادامیِ لطیف با مغز خامه‌ای رنگی؛ ترکیبی خوش‌رنگ و شیرین که هر ذائقه‌ای را مسحور می‌کند.</p>
+            <div class="price">۲۰۰۰۰ تومان</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal -->
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <button class="close-btn">بازگشت</button>
+      <img src="" alt="" id="modal-img">
+      <h3 id="modal-title"></h3>
+      <p id="modal-desc"></p>
+      <div class="price" id="modal-price"></div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+  <script>
+    // Nav tabs
+    document.querySelectorAll('nav button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelector('nav .active').classList.remove('active');
+        btn.classList.add('active');
+        document.querySelector('.section.active').classList.remove('active');
+        document.getElementById(btn.getAttribute('data-target')).classList.add('active');
+      });
+    });
+
+    // Modal logic
+    const modal   = document.getElementById('modal');
+    const imgEl   = document.getElementById('modal-img');
+    const titleEl = document.getElementById('modal-title');
+    const descEl  = document.getElementById('modal-desc');
+    const priceEl = document.getElementById('modal-price');
+
+    document.querySelectorAll('.item-card').forEach(card => {
+      card.addEventListener('click', () => {
+        imgEl.src          = card.querySelector('img').src;
+        titleEl.textContent = card.querySelector('h3').textContent;
+        descEl.textContent  = card.querySelector('p').textContent;
+        priceEl.textContent = card.querySelector('.price').textContent;
+        modal.classList.add('active');
+      });
+    });
+
+    document.querySelector('.close-btn').addEventListener('click', () => {
+      modal.classList.remove('active');
+    });
+
+    // Particles.js init
+    particlesJS('particles-js', {
+      particles: {
+        number:      { value: 40, density: { enable: true, value_area: 800 } },
+        color:       { value: '#e1b12c' },
+        shape:       { type: 'circle' },
+        opacity:     { value: 0.6, anim: { enable: true, speed: 1.5, opacity_min: 0.1 } },
+        size:        { value: 3, random: true },
+        move:        { enable: true, speed: 1, random: true, out_mode: 'out' }
+      },
+      interactivity: {
+        detect_on: 'canvas',
+        events:    { resize: true }
+      },
+      retina_detect: true
+    });
+  </script>
+
+</body>
+</html>
