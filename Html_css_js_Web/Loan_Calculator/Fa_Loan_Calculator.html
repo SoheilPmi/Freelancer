@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ماشین حساب وام</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Vazirmatn Font -->
+    <style>
+        @import url('https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.0.3/Vazirmatn-Variable-font-face.css');
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+        }
+        .scroll-container {
+            max-height: 350px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .persian-datepicker-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db; /* gray-300 */
+            border-radius: 0.5rem; /* rounded-lg */
+            outline: none;
+        }
+        .dark .persian-datepicker-input {
+            background-color: #374151; /* gray-700 */
+            color: #d1d5db; /* gray-200 */
+            border-color: #4b5563; /* gray-600 */
+        }
+    </style>
+    <!-- jQuery is required for persian-datepicker to work correctly -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <!-- Jalali Date Picker CDN -->
+    <link rel="stylesheet" href="https://unpkg.com/persian-datepicker@1.2.0/dist/css/persian-datepicker.css">
+    <script src="https://unpkg.com/persian-date@1.1.0/dist/persian-date.min.js"></script>
+    <script src="https://unpkg.com/persian-datepicker@1.2.0/dist/js/persian-datepicker.min.js"></script>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200 flex flex-col items-center justify-center min-h-screen p-4">
+
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-6 w-full max-w-xl md:max-w-md">
+        <h1 class="text-3xl font-bold text-center mb-4 text-gray-900 dark:text-gray-100">ماشین حساب وام</h1>
+        <p class="text-center text-sm mb-6 text-gray-500 dark:text-gray-400">تمام جزئیات وام خود را اینجا مشخص کنید.</p>
+        
+
+        <!-- History section -->
+        <div class="mb-8 pt-6 border-t border-gray-300 dark:border-gray-700">
+            <h3 class="text-xl font-bold mb-4 text-gray-900 dark:text-gray-100">تاریخچه محاسبات</h3>
+            <div id="historyList" class="space-y-3 scroll-container">
+                <p class="text-center text-gray-500 dark:text-gray-400 mt-4">تاریخچه در حال بارگذاری است...</p>
+            </div>
+        </div>
+
+        <!-- Input fields container -->
+        <div class="space-y-4">
+            <div>
+                <label for="loanAmount" class="block text-sm font-medium mb-1">مبلغ وام (تومان)</label>
+                <input type="text" id="loanAmount" placeholder="مثال: ۲,۵۰۰,۰۰۰" inputmode="numeric" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-200">
+            </div>
+
+            <div>
+                <label for="numInstallments" class="block text-sm font-medium mb-1">تعداد اقساط</label>
+                <input type="number" id="numInstallments" placeholder="مثال: ۱۲" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-200">
+            </div>
+
+            <div>
+                <label for="startDate" class="block text-sm font-medium mb-1">تاریخ شروع</label>
+                <input type="text" id="startDate" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-200" readonly>
+            </div>
+
+            <div>
+                <label for="installmentPeriod" class="block text-sm font-medium mb-1">فاصله اقساط (روز)</label>
+                <select id="installmentPeriod" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-200">
+                    <option value="15">۱۵ روزه</option>
+                    <option value="30" selected>۳۰ روزه (ماهانه)</option>
+                    <option value="45">۴۵ روزه</option>
+                    <option value="60">۶۰ روزه</option>
+                    <option value="70">۷۰ روزه</option>
+                    <option value="80">۸۰ روزه</option>
+                    <option value="90">۹۰ روزه</option>
+                    <option value="120">۱۲۰ روزه</option>
+                    <option value="180">۱۸۰ روزه (شش ماهه)</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Action buttons -->
+        <div class="flex space-x-2 space-x-reverse mt-6">
+            <button id="saveBtn" class="flex-1 py-3 bg-green-600 text-white font-bold rounded-lg hover:bg-green-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
+                ذخیره محاسبه
+            </button>
+        </div>
+
+        <!-- Result display section -->
+        <div id="resultContainer" class="mt-6 hidden">
+            <div class="flex justify-between items-center mb-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
+                <div>
+                    <span class="text-gray-500 dark:text-gray-400 text-sm block">کارمزد قسط اول (۴٪):</span>
+                    <span id="commissionAmount" class="font-bold text-lg text-gray-700 dark:text-gray-300"></span>
+                </div>
+                <div>
+                    <span class="text-gray-500 dark:text-gray-400 text-sm block">مبلغ کل پرداختنی:</span>
+                    <span id="totalAmount" class="font-bold text-lg text-gray-700 dark:text-gray-300"></span>
+                </div>
+            </div>
+            
+            <h3 class="text-xl font-bold mb-4 text-gray-900 dark:text-gray-100">برنامه اقساط</h3>
+            <div id="installmentsList" class="space-y-3 scroll-container">
+                <!-- Installment items will be dynamically generated here -->
+            </div>
+        </div>
+
+        <!-- Message/Error box -->
+        <div id="messageBox" class="mt-4 p-3 bg-red-100 text-red-700 rounded-lg border border-red-200 text-sm text-center hidden">
+            <!-- Error messages will be displayed here -->
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Setup Jalali date picker using jQuery selector
+            $('#startDate').persianDatepicker({
+                format: 'YYYY/MM/DD',
+                initialValue: true, 
+                autoClose: true
+            });
+
+            // Get references to all necessary elements
+            const loanInput = document.getElementById('loanAmount');
+            const numInstallmentsInput = document.getElementById('numInstallments');
+            const startDateInput = document.getElementById('startDate');
+            const installmentPeriodSelect = document.getElementById('installmentPeriod');
+            const saveBtn = document.getElementById('saveBtn');
+            const messageBox = document.getElementById('messageBox');
+            const resultContainer = document.getElementById('resultContainer');
+            const installmentsList = document.getElementById('installmentsList');
+            const commissionAmountEl = document.getElementById('commissionAmount');
+            const totalAmountEl = document.getElementById('totalAmount');
+            const historyList = document.getElementById('historyList');
+
+            // --- Helper Functions ---
+            const formatNumber = (num) => {
+                if (isNaN(num)) return '۰';
+                return new Intl.NumberFormat('fa-IR').format(num);
+            };
+
+            const showMessage = (message, isError = true) => {
+                messageBox.textContent = message;
+                messageBox.classList.remove('hidden', 'bg-red-100', 'text-red-700', 'bg-green-100', 'text-green-700');
+                messageBox.classList.add(isError ? 'bg-red-100' : 'bg-green-100', isError ? 'text-red-700' : 'text-green-700');
+            };
+
+            const hideMessage = () => {
+                messageBox.classList.add('hidden');
+            };
+
+            // --- Main Calculation and Display Logic ---
+            const calculateAndDisplay = () => {
+                hideMessage();
+                installmentsList.innerHTML = '';
+                resultContainer.classList.add('hidden');
+
+                const loanAmountStr = loanInput.value.replace(/,/g, '');
+                const loanAmount = parseFloat(loanAmountStr);
+                const numInstallments = parseInt(numInstallmentsInput.value);
+                const startDateStr = startDateInput.value;
+                const periodDays = parseInt(installmentPeriodSelect.value);
+
+                if (isNaN(loanAmount) || loanAmount <= 0 || isNaN(numInstallments) || numInstallments <= 0 || !startDateStr) {
+                    return;
+                }
+
+                // Calculation
+                const commissionRate = 0.04;
+                const commission = loanAmount * commissionRate;
+                const remainingAmount = loanAmount - commission;
+                const standardInstallment = remainingAmount / numInstallments;
+                const firstInstallmentAmount = standardInstallment + commission;
+
+                // Display summary
+                commissionAmountEl.textContent = `${formatNumber(commission)} تومان`;
+                totalAmountEl.textContent = `${formatNumber(loanAmount)} تومان`;
+
+                // Generate and display installment list
+                const startDateJalali = new persianDate(startDateStr);
+                
+                for (let i = 1; i <= numInstallments; i++) {
+                    const installmentAmount = (i === 1) ? firstInstallmentAmount : standardInstallment;
+                    const title = (i === 1) ? `قسط اول (شامل کارمزد)` : `قسط ${i}`;
+                    
+                    const dueDateJalali = new persianDate(startDateJalali).add((i - 1) * periodDays, 'days');
+                    const dueDateFormatted = dueDateJalali.format('dddd YYYY/MM/DD');
+
+                    const installmentItem = document.createElement('div');
+                    installmentItem.classList.add('bg-gray-100', 'dark:bg-gray-700', 'p-4', 'rounded-lg', 'shadow-sm', 'flex', 'flex-col', 'sm:flex-row', 'justify-between', 'items-center', 'mb-3');
+                    installmentItem.innerHTML = `
+                        <div class="flex-1 min-w-0 mb-2 sm:mb-0">
+                            <p class="text-sm font-medium text-gray-700 dark:text-gray-300">${title}</p>
+                            <p class="text-lg font-bold text-blue-600">${formatNumber(installmentAmount)} تومان</p>
+                        </div>
+                        <div class="text-left sm:text-right">
+                            <p class="text-sm text-gray-500 dark:text-gray-400">سررسید:</p>
+                            <p class="text-lg font-semibold text-gray-800 dark:text-gray-200">${dueDateFormatted}</p>
+                        </div>
+                    `;
+                    installmentsList.appendChild(installmentItem);
+                }
+                resultContainer.classList.remove('hidden');
+            };
+
+            // --- History Management (Local Storage) ---
+            const HISTORY_KEY = 'loanHistory';
+
+            const loadHistory = () => {
+                const historyData = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+                historyList.innerHTML = '';
+                if (historyData.length === 0) {
+                    historyList.innerHTML = `<p class="text-center text-gray-500 dark:text-gray-400 mt-4">هیچ موردی در تاریخچه وجود ندارد.</p>`;
+                    return;
+                }
+
+                historyData.forEach((loan, index) => {
+                    const historyItem = document.createElement('div');
+                    historyItem.classList.add('bg-gray-100', 'dark:bg-gray-700', 'p-4', 'rounded-lg', 'shadow-sm', 'relative', 'mb-3');
+                    historyItem.innerHTML = `
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h4 class="text-sm font-bold text-blue-600 mb-1">مبلغ وام: ${formatNumber(loan.loanAmount)} تومان</h4>
+                                <p class="text-sm text-gray-700 dark:text-gray-300">تعداد اقساط: ${loan.numInstallments}</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">فاصله اقساط: ${loan.periodDays} روزه</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">تاریخ شروع: ${loan.startDateJalali}</p>
+                                <p class="text-sm font-semibold mt-2">
+                                    مبلغ قسط: <span class="text-blue-600">${formatNumber(loan.installmentAmount)} تومان</span>
+                                </p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                    کارمزد: <span class="font-bold">${formatNumber(loan.commission)} تومان</span>
+                                </p>
+                            </div>
+                            <button class="delete-btn text-red-500 hover:text-red-700 transition-colors" data-index="${index}">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm6 0a1 1 0 011 1v5a1 1 0 11-2 0V9a1 1 0 011-1z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        </div>
+                    `;
+                    historyList.appendChild(historyItem);
+                });
+
+                // Attach delete event listeners
+                historyList.querySelectorAll('.delete-btn').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const index = parseInt(e.currentTarget.dataset.index);
+                        const data = JSON.parse(localStorage.getItem(HISTORY_KEY));
+                        if (index >= 0 && index < data.length) {
+                             data.splice(index, 1);
+                             localStorage.setItem(HISTORY_KEY, JSON.stringify(data));
+                             loadHistory();
+                             showMessage('محاسبه با موفقیت حذف شد.', false);
+                        }
+                    });
+                });
+            };
+
+            // --- Event Listeners ---
+            // Listen for changes in input fields to trigger auto-calculation
+            [loanInput, numInstallmentsInput, startDateInput, installmentPeriodSelect].forEach(element => {
+                element.addEventListener('input', calculateAndDisplay);
+            });
+
+            // Re-format loan input for better readability
+            loanInput.addEventListener('blur', (e) => {
+                const value = e.target.value.replace(/,/g, '');
+                if (!isNaN(value) && value.length > 0) {
+                    e.target.value = new Intl.NumberFormat('en-US').format(parseFloat(value));
+                }
+            });
+
+            // Save button event listener
+            saveBtn.addEventListener('click', () => {
+                const loanAmountStr = loanInput.value.replace(/,/g, '');
+                const loanAmount = parseFloat(loanAmountStr);
+                const numInstallments = parseInt(numInstallmentsInput.value);
+                const startDateJalali = startDateInput.value;
+                const periodDays = parseInt(installmentPeriodSelect.value);
+
+                if (isNaN(loanAmount) || isNaN(numInstallments) || !startDateJalali) {
+                    showMessage('لطفاً همه فیلدها را پر کنید.');
+                    return;
+                }
+
+                const loanData = {
+                    loanAmount: loanAmount,
+                    numInstallments: numInstallments,
+                    startDateJalali: startDateJalali,
+                    periodDays: periodDays,
+                    commission: loanAmount * 0.04,
+                    installmentAmount: (loanAmount - (loanAmount * 0.04)) / numInstallments,
+                    createdAt: new Date().toISOString()
+                };
+
+                const historyData = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+                historyData.unshift(loanData);
+                localStorage.setItem(HISTORY_KEY, JSON.stringify(historyData));
+
+                loadHistory();
+                showMessage('محاسبه با موفقیت ذخیره شد!', false);
+            });
+
+            // Initial load of history
+            loadHistory();
+            calculateAndDisplay();
+        });
+    </script>
+</body>
+          </html>
+  
