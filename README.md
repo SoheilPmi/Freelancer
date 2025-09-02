@@ -7,6 +7,9 @@ https://soheilpmi.github.io/Freelancer/
 
 New Works:
 
+[https://soheilpmi.github.io/Freelancer/Html_css_js_Web/Loan_Calculator/Fa_Loan_Calculator.html]
+
+
 [https://soheilpmi.github.io/Freelancer/Html_css_js_Web/GiveStarToSite/GiveStarToMySite.html]
 
 
