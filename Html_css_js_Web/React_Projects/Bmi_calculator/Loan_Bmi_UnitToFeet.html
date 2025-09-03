@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+  <title>Smart Converter • Bootstrap + Animations</title>
+  <!-- Bootstrap 5 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <style>
+    :root {
+      --bg1: #0f172a;
+      --bg2: #1e293b;
+      --glass: rgba(255,255,255,0.06);
+      --border: rgba(255,255,255,0.12);
+      --text: #e5e7eb;
+      --muted: #94a3b8;
+      --accent1: #06b6d4;
+      --accent2: #3b82f6;
+      --good: #10b981;
+      --warn: #f59e0b;
+      --bad:  #ef4444;
+    }
+    html, body {
+      height: 100%;
+      background: radial-gradient(1200px 600px at 20% -10%, #111827, transparent), linear-gradient(135deg, var(--bg1), var(--bg2));
+      color: var(--text);
+    }
+    body {
+      margin: 0;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    .wrapper {
+      min-height: 100%;
+      display: grid;
+      place-items: center;
+      padding: 16px;
+    }
+    .app-card {
+      width: 100%;
+      max-width: 520px;
+      border-radius: 20px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04));
+      border: 1px solid var(--border);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.35);
+      backdrop-filter: blur(14px);
+      padding: 18px;
+    }
+    .brand-title {
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      background: linear-gradient(90deg, var(--accent1), var(--accent2));
+      -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .nav-pills .nav-link {
+      color: var(--muted);
+      border: 1px solid transparent;
+      backdrop-filter: blur(6px);
+    }
+    .nav-pills .nav-link.active {
+      color: #0b1220;
+      font-weight: 700;
+      background: linear-gradient(90deg, var(--accent1), var(--accent2));
+      border-color: transparent;
+      box-shadow: 0 10px 28px rgba(59,130,246,0.35);
+    }
+    .glass {
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+    }
+    .form-control, .form-select {
+      background: rgba(255,255,255,0.08);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .form-control::placeholder { color: var(--muted); }
+    .btn-gradient {
+      background: linear-gradient(90deg, var(--accent1), var(--accent2));
+      color: #09111f;
+      font-weight: 700;
+      border: 0;
+      box-shadow: 0 10px 28px rgba(59,130,246,0.35);
+      transition: transform .18s ease, box-shadow .18s ease;
+      will-change: transform;
+    }
+    .btn-gradient:active { transform: scale(.98); }
+    .metric {
+      padding: 12px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+      text-align: center;
+    }
+    .metric .label { font-size: 12px; color: var(--muted); }
+    .metric .value { font-size: 20px; font-weight: 800; }
+
+    /* Reveal animations: performant, uses transform+opacity */
+    .reveal { opacity: 0; transform: translateY(12px); transition: opacity .5s ease, transform .5s ease; }
+    .reveal.show { opacity: 1; transform: none; }
+    @media (prefers-reduced-motion: reduce) {
+      .btn-gradient, .reveal { transition: none !important; transform: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="app-card">
+      <div id="root"></div>
+    </div>
+  </div>
+
+  <!-- React + ReactDOM + Babel -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <!-- Bootstrap bundle (optional for components) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script type="text/babel">
+    const { useEffect, useMemo, useRef, useState } = React;
+
+    // ---------- utils ----------
+    const toNum = (v, d = 0) => {
+      const n = typeof v === 'number' ? v : parseFloat(String(v).replace(/,/g, ''));
+      return Number.isFinite(n) ? n : d;
+    };
+    const fmtMoney = (n, currency = 'USD') => {
+      try { return new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(n || 0); }
+      catch { return '$' + (n || 0).toFixed(2); }
+    };
+
+    // Smooth count-up (fast, requestAnimationFrame)
+    function useCountUp(value, duration = 600) {
+      const [display, setDisplay] = useState(0);
+      const fromRef = useRef(0);
+      const startRef = useRef(0);
+      useEffect(() => {
+        const to = toNum(value, 0);
+        const from = fromRef.current = display;
+        const start = startRef.current = performance.now();
+        const d = Math.max(120, duration);
+        let raf;
+        const tick = (t) => {
+          const p = Math.min(1, (t - start) / d);
+          const eased = 1 - Math.pow(1 - p, 3); // easeOutCubic
+          const val = from + (to - from) * eased;
+          setDisplay(val);
+          if (p < 1) raf = requestAnimationFrame(tick);
+        };
+        raf = requestAnimationFrame(tick);
+        return () => cancelAnimationFrame(raf);
+      }, [value, duration]);
+      return display;
+    }
+
+    // IntersectionObserver to reveal elements
+    function useReveal() {
+      const ref = useRef(null);
+      useEffect(() => {
+        const el = ref.current;
+        if (!el) return;
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          el.classList.add('show'); return;
+        }
+        const io = new IntersectionObserver(([entry]) => {
+          if (entry.isIntersecting) {
+            el.classList.add('show');
+            io.disconnect();
+          }
+        }, { threshold: 0.2 });
+        io.observe(el);
+        return () => io.disconnect();
+      }, []);
+      return ref;
+    }
+
+    // ---------- components ----------
+    function Tabs({ active, setActive }) {
+      const tabs = [
+        { key: 'loan', label: 'Loan' },
+        { key: 'bmi', label: 'BMI' },
+        { key: 'units', label: 'Units' },
+      ];
+      return (
+        <ul className="nav nav-pills nav-fill gap-2 mb-3 glass p-1">
+          {tabs.map((t, i) => (
+            <li className="nav-item" key={t.key}>
+              <button
+                className={'nav-link ' + (active === i ? 'active' : '')}
+                onClick={() => setActive(i)}
+              >
+                {t.label}
+              </button>
+            </li>
+          ))}
+        </ul>
+      );
+    }
+
+    function LoanTab() {
+      const [amount, setAmount] = useState(25000);
+      const [apr, setApr] = useState(12);
+      const [months, setMonths] = useState(36);
+      const [currency, setCurrency] = useState('USD');
+      const [calc, setCalc] = useState(null);
+      const ref = useReveal();
+
+      const onCalc = () => {
+        const P = toNum(amount);
+        const n = Math.max(1, Math.round(toNum(months)));
+        const r = toNum(apr) / 100 / 12;
+        if (P <= 0 || n <= 0) { setCalc(null); return; }
+        const payment = r === 0 ? P / n : (P * r) / (1 - Math.pow(1 + r, -n));
+        const totalPayment = payment * n;
+        const totalInterest = totalPayment - P;
+        setCalc({
+          payment: Number(payment.toFixed(2)),
+          totalPayment: Number(totalPayment.toFixed(2)),
+          totalInterest: Number(totalInterest.toFixed(2)),
+        });
+      };
+
+      const mp = useCountUp(calc?.payment ?? 0);
+      const tp = useCountUp(calc?.totalPayment ?? 0);
+      const ti = useCountUp(calc?.totalInterest ?? 0);
+
+      return (
+        <div ref={ref} className="reveal">
+          <div className="row g-2">
+            <div className="col-12">
+              <label className="form-label small">Loan amount</label>
+              <input className="form-control" type="number" min="0" step="0.01"
+                     value={amount} onChange={e => setAmount(e.target.value)} />
+            </div>
+            <div className="col-6">
+              <label className="form-label small">APR %</label>
+              <input className="form-control" type="number" min="0" step="0.01"
+                     value={apr} onChange={e => setApr(e.target.value)} />
+            </div>
+            <div className="col-6">
+              <label className="form-label small">Term (months)</label>
+              <input className="form-control" type="number" min="1" step="1"
+                     value={months} onChange={e => setMonths(e.target.value)} />
+            </div>
+            <div className="col-12">
+              <label className="form-label small">Currency</label>
+              <select className="form-select" value={currency} onChange={e => setCurrency(e.target.value)}>
+                <option>USD</option><option>EUR</option><option>GBP</option><option>IRR</option>
+              </select>
+            </div>
+          </div>
+
+          <button className="btn btn-gradient w-100 mt-3" onClick={onCalc}>Calculate</button>
+
+          {calc && (
+            <div className="row g-2 mt-3">
+              <div className="col-12">
+                <div className="metric">
+                  <div className="label">Monthly payment</div>
+                  <div className="value">{fmtMoney(mp, currency)}</div>
+                </div>
+              </div>
+              <div className="col-6">
+                <div className="metric">
+                  <div className="label">Total paid</div>
+                  <div className="value">{fmtMoney(tp, currency)}</div>
+                </div>
+              </div>
+              <div className="col-6">
+                <div className="metric">
+                  <div className="label">Total interest</div>
+                  <div className="value">{fmtMoney(ti, currency)}</div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    function BMITab() {
+      const [height, setHeight] = useState(175);
+      const [weight, setWeight] = useState(70);
+      const [bmi, setBmi] = useState(null);
+      const ref = useReveal();
+
+      const onCalc = () => {
+        const h = toNum(height) / 100;
+        const w = toNum(weight);
+        if (h <= 0 || w <= 0) { setBmi(null); return; }
+        const v = w / (h * h);
+        let status = { label: 'Normal', color: 'success' };
+        if (v < 18.5) status = { label: 'Underweight', color: 'warning' };
+        else if (v >= 25 && v < 30) status = { label: 'Overweight', color: 'warning' };
+        else if (v >= 30) status = { label: 'Obese', color: 'danger' };
+        setBmi({ value: Number(v.toFixed(1)), status });
+      };
+
+      return (
+        <div ref={ref} className="reveal">
+          <div className="row g-2">
+            <div className="col-6">
+              <label className="form-label small">Height (cm)</label>
+              <input className="form-control" type="number" min="1" step="0.1"
+                     value={height} onChange={e => setHeight(e.target.value)} />
+            </div>
+            <div className="col-6">
+              <label className="form-label small">Weight (kg)</label>
+              <input className="form-control" type="number" min="1" step="0.1"
+                     value={weight} onChange={e => setWeight(e.target.value)} />
+            </div>
+          </div>
+          <button className="btn btn-gradient w-100 mt-3" onClick={onCalc}>Calculate</button>
+
+          {bmi && (
+            <div className="row g-2 mt-3">
+              <div className="col-12">
+                <div className="metric">
+                  <div className="label">Your BMI</div>
+                  <div className="value">{bmi.value}</div>
+                  <span className={`badge bg-${bmi.status.color} mt-2`}>{bmi.status.label}</span>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    function UnitTab() {
+      const ref = useReveal();
+      const [type, setType] = useState('length');
+      const [fromUnit, setFromUnit] = useState('m');
+      const [toUnit, setToUnit] = useState('ft');
+      const [val, setVal] = useState(1);
+      const [out, setOut] = useState(null);
+
+      const unitOptions = {
+        length: ['m','ft','km','mi','cm','in'],
+        weight: ['kg','lb','g'],
+        temp:   ['C','F','K']
+      };
+
+      useEffect(() => {
+        // reset sensible defaults on type change
+        if (type === 'length') { setFromUnit('m'); setToUnit('ft'); }
+        if (type === 'weight') { setFromUnit('kg'); setToUnit('lb'); }
+        if (type === 'temp')   { setFromUnit('C'); setToUnit('F'); }
+      }, [type]);
+
+      const convert = () => {
+        const x = toNum(val);
+        if (!Number.isFinite(x)) { setOut(null); return; }
+
+        if (type === 'length') {
+          const toMeters = (v, u) => ({
+            m: v, km: v*1000, cm: v/100, ft: v/3.28084, in: v/39.3701, mi: v*1609.34
+          }[u]);
+          const fromMeters = (m, u) => ({
+            m: m, km: m/1000, cm: m*100, ft: m*3.28084, in: m*39.3701, mi: m/1609.34
+          }[u]);
+          const meters = toMeters(x, fromUnit);
+          setOut(Number(fromMeters(meters, toUnit).toFixed(4)));
+        }
+        else if (type === 'weight') {
+          const toKg = (v,u) => ({ kg: v, g: v/1000, lb: v/2.20462 }[u]);
+          const fromKg = (k,u) => ({ kg: k, g: k*1000, lb: k*2.20462 }[u]);
+          const kg = toKg(x, fromUnit);
+          setOut(Number(fromKg(kg, toUnit).toFixed(4)));
+        }
+        else {
+          // temperature
+          let c;
+          if (fromUnit === 'C') c = x;
+          else if (fromUnit === 'F') c = (x - 32) * 5/9;
+          else c = x - 273.15;
+          let v;
+          if (toUnit === 'C') v = c;
+          else if (toUnit === 'F') v = c * 9/5 + 32;
+          else v = c + 273.15;
+          setOut(Number(v.toFixed(2)));
+        }
+      };
+
+      return (
+        <div ref={ref} className="reveal">
+          <div className="row g-2">
+            <div className="col-12">
+              <label className="form-label small">Converter</label>
+              <select className="form-select" value={type} onChange={e => setType(e.target.value)}>
+                <option value="length">Length</option>
+                <option value="weight">Weight</option>
+                <option value="temp">Temperature</option>
+              </select>
+            </div>
+            <div className="col-12">
+              <label className="form-label small">Value</label>
+              <input className="form-control" type="number" step="any" value={val} onChange={e => setVal(e.target.value)} />
+            </div>
+            <div className="col-6">
+              <label className="form-label small">From</label>
+              <select className="form-select" value={fromUnit} onChange={e => setFromUnit(e.target.value)}>
+                {unitOptions[type].map(u => <option key={u}>{u}</option>)}
+              </select>
+            </div>
+            <div className="col-6">
+              <label className="form-label small">To</label>
+              <select className="form-select" value={toUnit} onChange={e => setToUnit(e.target.value)}>
+                {unitOptions[type].map(u => <option key={u}>{u}</option>)}
+              </select>
+            </div>
+          </div>
+          <button className="btn btn-gradient w-100 mt-3" onClick={convert}>Convert</button>
+
+          {out !== null && (
+            <div className="metric mt-3">
+              <div className="label">Result</div>
+              <div className="value">{val} {fromUnit} = {out} {toUnit}</div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    function App() {
+      const [active, setActive] = useState(0);
+      const titleRef = useReveal();
+
+      return (
+        <div>
+          <div className="mb-3 text-center" ref={titleRef}>
+            <h1 className="brand-title fs-3 mb-1">Smart Converter</h1>
+            <div className="text-secondary small">Bootstrap • Mobile friendly • Performant animations</div>
+          </div>
+
+          <Tabs active={active} setActive={setActive} />
+
+          <div className="glass p-3">
+            {active === 0 && <LoanTab />}
+            {active === 1 && <BMITab />}
+            {active === 2 && <UnitTab />}
+          </div>
+
+          <div className="mt-3 text-center text-secondary small">
+            Tip: tap any field and start typing — everything is optimized for touch.
+          </div>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+  </html>
