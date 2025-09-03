@@ -7,6 +7,9 @@ https://soheilpmi.github.io/Freelancer/
 
 New Works:
 
+[https://soheilpmi.github.io/Freelancer/Html_css_js_Web/React_Projects/Bmi_calculator/Bmi_Calcu_Simple.Html]
+
+
 [https://soheilpmi.github.io/Freelancer/Html_css_js_Web/Loan_Calculator/Fa_Loan_Calculator.html]
 
 
